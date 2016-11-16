@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/nav_header_height"
+        android:background="@drawable/side_nav_bar"
+        android:gravity="top"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingEnd="@dimen/activity_horizontal_margin_min"
+        android:paddingStart="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin_min"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark">
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:gravity="bottom"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/nav_header_vertical_spacing"
+                app:srcCompat="@android:drawable/sym_def_app_icon" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/nav_header_vertical_spacing"
+                android:text="@string/left_drawer_app_title"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/left_drawer_developer_email" />
+
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/imageButtonLanguage"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:padding="0dp"
+            android:scaleType="centerInside"
+            android:src="@mipmap/ic_khmer" />
+    </RelativeLayout>
+    <com.camant.moneycrab.view.Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Spinner"
+        android:id="@+id/spinner"
+        android:layout_marginTop="@dimen/min_padding"
+        android:layout_marginLeft="@dimen/min_padding"
+        android:layout_marginRight="@dimen/min_padding"
+        />
+    <!--<LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/activity_horizontal_margin_min">
+
+        <ToggleButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textOff="@string/right_drawer_day"
+            android:textOn="@string/right_drawer_day"
+            android:background="@drawable/toggle_button"
+            android:textColor="@color/white"/>
+
+        <ToggleButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textOff="@string/right_drawer_week"
+            android:textOn="@string/right_drawer_week"
+            android:background="@drawable/toggle_button"
+            android:textColor="@color/white"
+            android:layout_marginTop="@dimen/med_padding"/>
+        <ToggleButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textOff="@string/right_drawer_month"
+            android:textOn="@string/right_drawer_month"
+            android:background="@drawable/toggle_button"
+            android:textColor="@color/white"
+            android:layout_marginTop="@dimen/med_padding"/>
+        <ToggleButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textOff="@string/right_drawer_year"
+            android:textOn="@string/right_drawer_year"
+            android:background="@drawable/toggle_button"
+            android:textColor="@color/white"
+            android:layout_marginTop="@dimen/med_padding"/>
+    </LinearLayout>-->
+
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/min_padding">
+        <RadioButton
+            android:text="@string/right_drawer_day"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/radioButtonDay"
+            android:background="@drawable/toggle_radio_button"
+            android:padding="@dimen/max_padding"
+            android:textColor="@color/white"
+            android:button="@null"
+            android:textAlignment="center"/>
+        <RadioButton
+            android:text="@string/right_drawer_week"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/radioButtonWeek"
+            android:background="@drawable/toggle_radio_button"
+            android:padding="@dimen/max_padding"
+            android:layout_marginTop="@dimen/min_padding"
+            android:textColor="@color/white"
+            android:button="@null"
+            android:textAlignment="center"/>
+        <RadioButton
+            android:text="@string/right_drawer_month"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/radioButtonMonth"
+            android:background="@drawable/toggle_radio_button"
+            android:padding="@dimen/max_padding"
+            android:layout_marginTop="@dimen/min_padding"
+            android:textColor="@color/white"
+            android:button="@null"
+            android:textAlignment="center"/>
+        <RadioButton
+            android:text="@string/right_drawer_year"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/radioButtonYear"
+            android:background="@drawable/toggle_radio_button"
+            android:padding="@dimen/max_padding"
+            android:layout_marginTop="@dimen/min_padding"
+            android:textColor="@color/white"
+            android:button="@null"
+            android:textAlignment="center"/>
+    </RadioGroup>
+</LinearLayout>

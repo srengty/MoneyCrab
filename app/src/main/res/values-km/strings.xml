@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MoneyCrab</string>
+    <string name="action_settings">កំនត់</string>
+    <string name="lorem_ipsum">Screen slides are transitions between one entire screen to another and are common with UIs like setup wizards or slideshows. This lesson shows you how to do screen slides with a ViewPager provided by the support library. ViewPagers can animate screen slides automatically. Here\'s what a screen slide looks like that transitions from one screen of content to the next:</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="left_drawer_app_title">ក្តាមគិតលុយ</string>
+    <string name="left_drawer_developer_email">sreng@camant.com</string>
+</resources>

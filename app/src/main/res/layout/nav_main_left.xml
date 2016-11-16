@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/nav_header_main"/>
+    <com.camant.moneycrab.view.Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Spinner"
+        android:id="@+id/spinner"
+        android:layout_marginTop="@dimen/min_padding"
+        android:layout_marginLeft="@dimen/min_padding"
+        android:layout_marginRight="@dimen/min_padding"
+        />
+
+    <com.camant.moneycrab.view.AnimatedExpandableListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/lvExp"
+        android:layout_weight="1"
+        android:groupIndicator="@null"
+        android:headerDividersEnabled="false"
+        android:dividerHeight="1px"
+        android:divider="@android:color/transparent"
+        android:childDivider="#ccc"/>
+
+</LinearLayout>
