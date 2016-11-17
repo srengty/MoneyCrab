@@ -11,6 +11,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 
 import com.camant.moneycrab.R;
+import com.camant.moneycrab.fragment.CategoriesListFragment;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -57,7 +58,16 @@ public class TransactionPlusActivity extends AppCompatActivity implements View.O
         });
 
         Button button = (Button)findViewById(R.id.buttonChooseCategory);
-        button.setOnClickListener(this);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.container, new CategoriesListFragment())
+                        .addToBackStack("TransactionPlus")
+                        .commit();
+            }
+        });
     }
     private void updateLabel() {
         editText.setText(sdf.format(myCalendar.getTime()));
