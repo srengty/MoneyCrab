@@ -129,6 +129,7 @@ public class MainActivity extends AppCompatActivity
                         //add new currency
                     }
                 }
+                Toast.makeText(MainActivity.this, ""+moneyBase.getTableName()+": "+moneyBase, Toast.LENGTH_LONG).show();
                 return false;
             }
         });
