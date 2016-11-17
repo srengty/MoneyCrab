@@ -1,5 +1,6 @@
 package com.camant.moneycrab;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -26,6 +27,7 @@ import android.widget.ExpandableListView;
 import android.widget.TabHost;
 import android.widget.Toast;
 
+import com.camant.moneycrab.activity.TransactionPlusActivity;
 import com.camant.moneycrab.adapter.ExpandableListAdapter;
 import com.camant.moneycrab.anim.ZoomOutPageTransformer;
 import com.camant.moneycrab.dao.AccountOrmDao;
@@ -47,6 +49,8 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, AdapterView.OnItemClickListener, ExpandableListView.OnGroupClickListener, ExpandableListView.OnGroupExpandListener {
+    private static final int TRANSACTION_PLUS = 1;
+    private static final int TRANSACTION_MINUS = 2;
     ExpandableListAdapter listAdapter;
     AnimatedExpandableListView expListView;
     List<String> listDataHeader;
@@ -67,10 +71,24 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton fabMinus = (FloatingActionButton) findViewById(R.id.fab);
+        fabMinus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, TransactionPlusActivity.class);
+                intent.putExtra("user",false);
+                startActivityForResult(intent, TRANSACTION_PLUS);
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
+        FloatingActionButton fabPlus = (FloatingActionButton) findViewById(R.id.fabPlus);
+        fabPlus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, TransactionPlusActivity.class);
+                intent.putExtra("user",false);
+                startActivityForResult(intent, TRANSACTION_MINUS);
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
@@ -360,5 +378,10 @@ public class MainActivity extends AppCompatActivity
         // 1dp/ms
         a.setDuration((int)(initialHeight / v.getContext().getResources().getDisplayMetrics().density));
         v.startAnimation(a);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Toast.makeText(this,"Ok",Toast.LENGTH_LONG).show();
     }
 }
