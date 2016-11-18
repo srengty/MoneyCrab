@@ -30,21 +30,30 @@ public class CategoryHolder extends RecyclerView.ViewHolder implements View.OnCl
         if(imageViewIcon != null){
             Glide.with(itemView.getContext())
                     .load(categoryOrm.getIcon())
-                    .placeholder(R.drawable.ic_wallpaper_black_300dp)
-                    .error(R.drawable.ic_wallpaper_black_300dp)
+                    .placeholder(R.drawable.ic_no_picture)
+                    .error(R.drawable.ic_no_picture)
                     .into(imageViewIcon);
         }
         if(textViewName != null){
             textViewName.setText(categoryOrm.getName());
         }
-        itemView.setTag(1,categoryOrm);
-        itemView.setTag(2, position);
+        itemView.setTag(new Holder(categoryOrm, position));
     }
 
     @Override
     public void onClick(View view) {
         if(onItemClickListener != null){
-            onItemClickListener.onItemClick(itemView, (CategoryOrm)itemView.getTag(1),(Integer)itemView.getTag(2));
+            Holder holder = (Holder)itemView.getTag();
+            onItemClickListener.onItemClick(itemView, holder.categoryOrm,holder.position);
+        }
+    }
+    public class Holder{
+        CategoryOrm categoryOrm;
+        int position;
+
+        public Holder(CategoryOrm categoryOrm, int position) {
+            this.categoryOrm = categoryOrm;
+            this.position = position;
         }
     }
 }

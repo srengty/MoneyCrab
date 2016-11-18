@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 
 import com.camant.moneycrab.R;
+import com.camant.moneycrab.dao.TransactionDao;
 import com.camant.moneycrab.fragment.CategoriesListFragment;
 import com.camant.moneycrab.fragment.TransactionNoteFragment;
 import com.camant.moneycrab.helper.TransactionDataListener;
@@ -57,6 +58,7 @@ public class TransactionPlusActivity extends AppCompatActivity implements View.O
 
         TransactionNoteFragment transactionNote = new TransactionNoteFragment();
         transactionNote.setArguments(extras);
+        transactionNote.setTransactionDataListener(this);
         getSupportFragmentManager()
                 .beginTransaction()
                 .add(R.id.container, transactionNote)
@@ -99,7 +101,11 @@ public class TransactionPlusActivity extends AppCompatActivity implements View.O
     @Override
     public void onNextFieldSet(CategoryOrm categoryOrm) {
         transaction.setT_date(myCalendar.getTime());
-        transaction.setT_in(Double.valueOf(editTextAmount.getText().toString()));
+        if (editTextAmount.getText().length() > 0){
+            transaction.setT_in(Double.valueOf(editTextAmount.getText().toString()));
+        }else{
+            transaction.setT_in(0);
+        }
         transaction.setT_out(0d);
         transaction.setAccountId(1);
         transaction.setCategoryId(categoryOrm.getId());
@@ -108,6 +114,9 @@ public class TransactionPlusActivity extends AppCompatActivity implements View.O
 
     @Override
     public void onSubmit() {
-
+        TransactionDao transactionDao = new TransactionDao(this);
+        transactionDao.create(transaction);
+        setResult(RESULT_OK);
+        finish();
     }
 }

@@ -31,11 +31,11 @@ public class CategoriesListFragment extends TransactionBaseFragment implements V
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_categories_list, container, false);
-        CategoriesView categoriesView = (CategoriesView)view.findViewById(R.id.categoriesView);
-        categoriesView.setData(categoryOrms);
         CategoryOrmDao categoryOrmDao = new CategoryOrmDao(this.getActivity());
         categoryOrms.clear();
         categoryOrms.addAll(categoryOrmDao.getAllLazily());
+        CategoriesView categoriesView = (CategoriesView)view.findViewById(R.id.categoriesView);
+        categoriesView.setData(categoryOrms);
         categoriesView.setOnItemClickListener(this);
         return view;
     }

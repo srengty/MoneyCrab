@@ -30,6 +30,8 @@ public class TransactionNoteFragment extends TransactionBaseFragment {
         View view = inflater.inflate(R.layout.fragment_transaction_note, container, false);
         editText = (EditText)view.findViewById(R.id.editTextNote);
         Button button = (Button)view.findViewById(R.id.buttonChooseCategory);
+        final CategoriesListFragment categoriesListFragment = new CategoriesListFragment();
+        categoriesListFragment.setTransactionDataListener(this.transactionDataListener);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -38,7 +40,7 @@ public class TransactionNoteFragment extends TransactionBaseFragment {
                 }
                 getActivity().getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.container, new CategoriesListFragment())
+                        .replace(R.id.container, categoriesListFragment)
                         .addToBackStack("TransactionPlus")
                         .setCustomAnimations(R.anim.slide_in_up, R.anim.slide_out_up)
                         .commit();

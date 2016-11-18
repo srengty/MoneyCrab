@@ -1,6 +1,7 @@
 package com.camant.moneycrab.view;
 
 import android.content.Context;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -61,6 +62,8 @@ public class CategoriesView extends RelativeLayout {
         LayoutInflater.from(context).inflate(R.layout.categories_view_layout, this, true);
         recyclerViewCategories = (RecyclerView)findViewById(R.id.recyclerViewCategories);
         if(recyclerViewCategories != null){
+            GridLayoutManager gridLayoutManager = new GridLayoutManager(context,3);
+            recyclerViewCategories.setLayoutManager(gridLayoutManager);
             categoriesAdapter = new CategoriesAdapter(categoryOrms);
             recyclerViewCategories.setAdapter(categoriesAdapter);
         }
