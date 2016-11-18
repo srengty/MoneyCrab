@@ -20,7 +20,7 @@ import java.util.ArrayList;
 public class CategoriesView extends RelativeLayout {
     RecyclerView recyclerViewCategories;
     private CategoriesAdapter categoriesAdapter;
-    private OnClickListener onItemClickListener;
+    private CategoriesAdapter.OnItemClickListener onItemClickListener;
     private ArrayList<CategoryOrm> categoryOrms = new ArrayList<>();
 
     /*
@@ -66,7 +66,10 @@ public class CategoriesView extends RelativeLayout {
         }
     }
 
-    public void setOnItemClickListener(OnClickListener onItemClickListener) {
+    public void setOnItemClickListener(CategoriesAdapter.OnItemClickListener onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
+        if(categoriesAdapter != null){
+            categoriesAdapter.setOnItemClickListener(onItemClickListener);
+        }
     }
 }

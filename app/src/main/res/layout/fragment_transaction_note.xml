@@ -1,0 +1,23 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.camant.moneycrab.fragment.TransactionNoteFragment">
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:inputType="textMultiLine"
+        android:ems="10"
+        android:layout_marginTop="20dp"
+        android:id="@+id/editTextNote"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="1"/>
+    <Button
+        android:text="Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/buttonChooseCategory"
+        android:layout_gravity="bottom"/>
+
+</LinearLayout>

@@ -17,8 +17,8 @@ public class Transaction extends MoneyBase {
     private double t_out;
     private double rate;
     private Date t_date;
-    private int categoryId;
-    private int accountId;
+    private long categoryId;
+    private long accountId;
     public Transaction(){super();}
     public Transaction(Parcel in) {
         super(in);
@@ -31,8 +31,8 @@ public class Transaction extends MoneyBase {
         t_out = in.readDouble();
         rate = in.readDouble();
         t_date = DbUtil.longToDate(in.readLong());
-        categoryId = in.readInt();
-        accountId = in.readInt();
+        categoryId = in.readLong();
+        accountId = in.readLong();
     }
 
     @Override
@@ -42,8 +42,8 @@ public class Transaction extends MoneyBase {
         parcel.writeDouble(t_out);
         parcel.writeDouble(rate);
         parcel.writeLong(DbUtil.dateToLong(t_date));
-        parcel.writeInt(categoryId);
-        parcel.writeInt(accountId);
+        parcel.writeLong(categoryId);
+        parcel.writeLong(accountId);
     }
     @Override
     public int describeContents() {
@@ -102,19 +102,19 @@ public class Transaction extends MoneyBase {
         this.t_date = t_date;
     }
 
-    public int getCategoryId() {
+    public long getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(int categoryId) {
+    public void setCategoryId(long categoryId) {
         this.categoryId = categoryId;
     }
 
-    public int getAccountId() {
+    public long getAccountId() {
         return accountId;
     }
 
-    public void setAccountId(int accountId) {
+    public void setAccountId(long accountId) {
         this.accountId = accountId;
     }
 

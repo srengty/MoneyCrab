@@ -9,20 +9,26 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 
 import com.camant.moneycrab.R;
 import com.camant.moneycrab.fragment.CategoriesListFragment;
+import com.camant.moneycrab.fragment.TransactionNoteFragment;
+import com.camant.moneycrab.helper.TransactionDataListener;
+import com.camant.moneycrab.model.Transaction;
+import com.camant.moneycrab.orm.CategoryOrm;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-public class TransactionPlusActivity extends AppCompatActivity implements View.OnClickListener {
+public class TransactionPlusActivity extends AppCompatActivity implements View.OnClickListener, TransactionDataListener {
     private Calendar myCalendar = Calendar.getInstance();
     private DatePickerDialog.OnDateSetListener date;
-    private EditText editText;
+    private EditText editText, editTextAmount;
     SimpleDateFormat sdf;
+    private Transaction transaction = new Transaction();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +39,7 @@ public class TransactionPlusActivity extends AppCompatActivity implements View.O
         }
         sdf = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault());
         editText = (EditText) findViewById(R.id.editTextDate);
+        editTextAmount = (EditText) findViewById(R.id.editTextAmount);
         editText.setText(sdf.format(myCalendar.getTime()));
         date = new DatePickerDialog.OnDateSetListener() {
 
@@ -46,6 +53,14 @@ public class TransactionPlusActivity extends AppCompatActivity implements View.O
             }
 
         };
+        Bundle extras = new Bundle();
+
+        TransactionNoteFragment transactionNote = new TransactionNoteFragment();
+        transactionNote.setArguments(extras);
+        getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.container, transactionNote)
+                .commit();
 
         editText.setOnClickListener(new View.OnClickListener() {
 
@@ -57,17 +72,6 @@ public class TransactionPlusActivity extends AppCompatActivity implements View.O
             }
         });
 
-        Button button = (Button)findViewById(R.id.buttonChooseCategory);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.container, new CategoriesListFragment())
-                        .addToBackStack("TransactionPlus")
-                        .commit();
-            }
-        });
     }
     private void updateLabel() {
         editText.setText(sdf.format(myCalendar.getTime()));
@@ -84,6 +88,26 @@ public class TransactionPlusActivity extends AppCompatActivity implements View.O
 
     @Override
     public void onClick(View view) {
+
+    }
+
+    @Override
+    public void onFieldSet(String note) {
+        transaction.setNote(note);
+    }
+
+    @Override
+    public void onNextFieldSet(CategoryOrm categoryOrm) {
+        transaction.setT_date(myCalendar.getTime());
+        transaction.setT_in(Double.valueOf(editTextAmount.getText().toString()));
+        transaction.setT_out(0d);
+        transaction.setAccountId(1);
+        transaction.setCategoryId(categoryOrm.getId());
+        transaction.setRate(1.0);
+    }
+
+    @Override
+    public void onSubmit() {
 
     }
 }

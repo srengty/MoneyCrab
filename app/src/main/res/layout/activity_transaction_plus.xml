@@ -35,26 +35,10 @@
             android:gravity="end"
             android:layout_gravity="center_horizontal" />
 
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textMultiLine"
-            android:ems="10"
-            android:lines="2"
-            android:layout_marginTop="20dp"
-            android:id="@+id/editTextNote"
-            android:layout_gravity="center_horizontal" />
     </LinearLayout>
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/container"
-        android:layout_below="@+id/layoutTop">
-    <Button
-        android:text="Button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/buttonChooseCategory"
-        android:layout_gravity="bottom"/>
-    </FrameLayout>
+        android:layout_below="@+id/layoutTop"/>
 </RelativeLayout>

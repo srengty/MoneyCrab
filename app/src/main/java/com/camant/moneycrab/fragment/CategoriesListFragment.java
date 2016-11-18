@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.camant.moneycrab.R;
+import com.camant.moneycrab.adapter.CategoriesAdapter;
 import com.camant.moneycrab.dao.CategoryOrmDao;
 import com.camant.moneycrab.orm.CategoryOrm;
 import com.camant.moneycrab.view.CategoriesView;
@@ -18,7 +19,7 @@ import java.util.ArrayList;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CategoriesListFragment extends Fragment implements View.OnClickListener {
+public class CategoriesListFragment extends TransactionBaseFragment implements View.OnClickListener, CategoriesAdapter.OnItemClickListener {
     private ArrayList<CategoryOrm> categoryOrms = new ArrayList<>();
 
     public CategoriesListFragment() {
@@ -42,5 +43,13 @@ public class CategoriesListFragment extends Fragment implements View.OnClickList
     @Override
     public void onClick(View view) {
 
+    }
+
+    @Override
+    public void onItemClick(View view, CategoryOrm categoryOrm, int position) {
+        if(transactionDataListener != null){
+            transactionDataListener.onNextFieldSet(categoryOrm);
+            transactionDataListener.onSubmit();
+        }
     }
 }
