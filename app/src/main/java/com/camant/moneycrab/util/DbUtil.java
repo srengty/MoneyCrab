@@ -20,4 +20,5 @@ public class DbUtil {
         if(dateLong == 0) return defaultDate;
         return new Date(dateLong);
     }
+    public static final String DEFAULT_DATE_FORMAT = "dd/MM/yyyy";
 }

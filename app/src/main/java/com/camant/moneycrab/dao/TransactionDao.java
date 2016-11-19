@@ -3,7 +3,9 @@ package com.camant.moneycrab.dao;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.v4.database.DatabaseUtilsCompat;
 
 import com.camant.moneycrab.model.Transaction;
 import com.camant.moneycrab.util.DbUtil;
@@ -25,6 +27,16 @@ public class TransactionDao extends BaseDao<Transaction> {
     protected ArrayList<Transaction> getAll(SQLiteDatabase readableDatabase) {
         ArrayList<Transaction> transactions = new ArrayList<>();
         Cursor cursor = readableDatabase.rawQuery("SELECT * FROM "+ MoneyDbHelper.TABLE_TRANSACTIONS, new String[]{});
+        if(cursor.moveToFirst()){
+            do {
+                transactions.add(buildFromCursor(cursor));
+            }while (cursor.moveToNext());
+        }
+        return transactions;
+    }
+    public ArrayList<Transaction> getAll(long from, long to) {
+        ArrayList<Transaction> transactions = new ArrayList<>();
+        Cursor cursor = dbHelper.getReadableDatabase().rawQuery("SELECT * FROM "+ MoneyDbHelper.TABLE_TRANSACTIONS+" WHERE t_date BETWEEN ? AND ?", new String[]{""+from, ""+to});
         if(cursor.moveToFirst()){
             do {
                 transactions.add(buildFromCursor(cursor));
@@ -54,7 +66,7 @@ public class TransactionDao extends BaseDao<Transaction> {
             Date now = new Date();
             transaction.setCreated(now);
             transaction.setModified(now);
-            transaction.setT_date(now);
+            //transaction.setT_date(now);
             ContentValues contentValues = new ContentValues();
             contentValues.put("note", transaction.getNote());
             contentValues.put("t_in", transaction.getT_in());
@@ -101,6 +113,25 @@ public class TransactionDao extends BaseDao<Transaction> {
     @Override
     protected Transaction getById(long id, SQLiteDatabase readableDatabase) {
         Cursor cursor = readableDatabase.rawQuery("SELECT * FROM "+MoneyDbHelper.TABLE_TRANSACTIONS+" WHERE id=?",new String[]{""+id});
+        Transaction transaction = null;
+        if(cursor.moveToFirst()){
+            transaction = buildFromCursor(cursor);
+        }
+        return transaction;
+    }
+    public long getCount(){
+        return DatabaseUtils.queryNumEntries(dbHelper.getReadableDatabase(),MoneyDbHelper.TABLE_TRANSACTIONS);
+    }
+    public Transaction getLastTransaction(){
+        Cursor cursor = dbHelper.getReadableDatabase().rawQuery("SELECT * FROM "+MoneyDbHelper.TABLE_TRANSACTIONS+" ORDER BY t_date DESC limit 1",new String[]{});
+        Transaction transaction = null;
+        if(cursor.moveToFirst()){
+            transaction = buildFromCursor(cursor);
+        }
+        return transaction;
+    }
+    public Transaction getFirstTransaction(){
+        Cursor cursor = dbHelper.getReadableDatabase().rawQuery("SELECT * FROM "+MoneyDbHelper.TABLE_TRANSACTIONS+" ORDER BY t_date ASC limit 1",new String[]{});
         Transaction transaction = null;
         if(cursor.moveToFirst()){
             transaction = buildFromCursor(cursor);

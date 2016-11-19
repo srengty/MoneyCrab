@@ -12,8 +12,12 @@ import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.camant.moneycrab.R;
+import com.camant.moneycrab.dao.TransactionDao;
+import com.camant.moneycrab.model.Transaction;
+import com.camant.moneycrab.util.DbUtil;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
@@ -23,7 +27,10 @@ import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by sreng on 11/6/2016.
@@ -31,6 +38,13 @@ import java.util.ArrayList;
 
 public class ScreenSlidePageFragment extends Fragment {
     protected Typeface mTfLight;
+    private TextView textViewDate;
+    private Date date;
+    private int interval = 1;
+    private long from, to;
+    private Calendar calendar;
+    private SimpleDateFormat dateFormat = new SimpleDateFormat(DbUtil.DEFAULT_DATE_FORMAT);
+    private ArrayList<Transaction> transactions = new ArrayList<>();
     protected String[] mMonths = new String[] {
             "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dec"
     };
@@ -45,8 +59,44 @@ public class ScreenSlidePageFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        date = new Date();
+        Bundle bundle = getArguments();
+        if(bundle != null){{
+            if(bundle.containsKey("date")){
+                date = DbUtil.longToDate(bundle.getLong("date"));
+            }
+            if(bundle.containsKey("interval")){
+                interval = bundle.getInt("interval");
+            }
+        }}
+        calendar = Calendar.getInstance();
+        calendar.setFirstDayOfWeek(Calendar.MONDAY);
+        calendar.setTime(date);
+        calendar.set(Calendar.HOUR_OF_DAY, 0); // ! clear would not reset the hour of day !
+        calendar.clear(Calendar.MINUTE);
+        calendar.clear(Calendar.SECOND);
+        calendar.clear(Calendar.MILLISECOND);
+        if(interval == 7){
+            calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        }else if(interval == 30){
+            calendar.set(Calendar.DAY_OF_MONTH, 1);
+        }else if(interval == 365){
+            calendar.set(Calendar.DAY_OF_YEAR, 1);
+        }
+        from = calendar.getTimeInMillis();
+        String title = dateFormat.format(calendar.getTime());
+        calendar.add(Calendar.DAY_OF_MONTH, interval);
+        calendar.add(Calendar.MILLISECOND, -1);
+        if(interval > 1) {
+            title += " - " + dateFormat.format(calendar.getTime());
+        }
+        to = calendar.getTimeInMillis();
+        TransactionDao transactionDao = new TransactionDao(getActivity());
+        transactions = transactionDao.getAll(from, to);
         ViewGroup rootView = (ViewGroup) inflater.inflate(
                 R.layout.fragment_screen_slide_page, container, false);
+        textViewDate = (TextView) rootView.findViewById(R.id.textViewDate);
+        textViewDate.setText(title);
         mTfLight = Typeface.createFromAsset(getActivity().getAssets(), "OpenSans-Light.ttf");
         mChart = (PieChart) rootView.findViewById(R.id.chart1);
         mChart.setUsePercentValues(true);

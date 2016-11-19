@@ -17,14 +17,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ExpandableListView;
-import android.widget.TabHost;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.camant.moneycrab.activity.TransactionPlusActivity;
@@ -33,17 +33,22 @@ import com.camant.moneycrab.anim.ZoomOutPageTransformer;
 import com.camant.moneycrab.dao.AccountOrmDao;
 import com.camant.moneycrab.dao.CategoryOrmDao;
 import com.camant.moneycrab.dao.CurrencyDao;
+import com.camant.moneycrab.dao.TransactionDao;
 import com.camant.moneycrab.fragment.ScreenSlidePageFragment;
 import com.camant.moneycrab.model.Account;
 import com.camant.moneycrab.model.CategoryType;
 import com.camant.moneycrab.model.Currency;
 import com.camant.moneycrab.model.MoneyBase;
+import com.camant.moneycrab.model.Transaction;
 import com.camant.moneycrab.orm.AccountOrm;
 import com.camant.moneycrab.orm.CategoryOrm;
+import com.camant.moneycrab.util.DbUtil;
 import com.camant.moneycrab.view.AnimatedExpandableListView;
 import com.camant.moneycrab.view.Spinner;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -55,10 +60,15 @@ public class MainActivity extends AppCompatActivity
     AnimatedExpandableListView expListView;
     List<String> listDataHeader;
     HashMap<String, List<MoneyBase>> listDataChild;
+    TransactionDao transactionDao;
+    private int dayCount = 1;
+    private int interval = 1;
+    private Transaction beginTransation, endTransaction;
+    private Calendar calendar = Calendar.getInstance();
     /**
      * The number of pages (wizard steps) to show in this demo.
      */
-    private static final int NUM_PAGES = 5;
+    private static int NUM_PAGES = 1;
 
     private ViewPager mPager;
     private ScreenSlidePagerAdapter mPagerAdapter;
@@ -109,9 +119,38 @@ public class MainActivity extends AppCompatActivity
         spinner.setAdapter(arrayAdapter);
         spinner.setOnItemClickListener(this);
 
+        calendar.setFirstDayOfWeek(Calendar.MONDAY);
+        transactionDao = new TransactionDao(this);
+        initTransactions();
+        RadioGroup radioGroup = (RadioGroup)navigationViewRight.findViewById(R.id.radioGroupDateFilter);
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
+                RadioButton checkedRadioButton = (RadioButton)radioGroup.findViewById(checkedId);
+                boolean isChecked = checkedRadioButton.isChecked();
+                if (isChecked)
+                {
+                    if(checkedRadioButton.getText().toString().equals(getString(R.string.right_drawer_day))){
+                        interval = 1;
+                    }else if(checkedRadioButton.getText().toString().equals(getString(R.string.right_drawer_week))){
+                        interval = 7;
+                    }else if(checkedRadioButton.getText().toString().equals(getString(R.string.right_drawer_month))){
+                        interval = 30;
+                    }else if(checkedRadioButton.getText().toString().equals(getString(R.string.right_drawer_year))){
+                        interval = 365;
+                    }
+                    NUM_PAGES = dayCount / interval;
+                    if(NUM_PAGES<1) NUM_PAGES = 1;
+                    mPager.setAdapter(mPagerAdapter);
+                    mPagerAdapter.notifyDataSetChanged();
+                }
+            }
+        });
+
         mPager = (ViewPager) findViewById(R.id.pager);
         mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(mPagerAdapter);
+        mPager.setCurrentItem(NUM_PAGES - 1);
         mPager.setPageTransformer(true, new ZoomOutPageTransformer());
 
         // get the listview
@@ -318,12 +357,25 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         public Fragment getItem(int position) {
-            return new ScreenSlidePageFragment();
+            int datePos = position + 1 - NUM_PAGES;
+            calendar.setTime(new Date());
+            calendar.add(Calendar.DAY_OF_MONTH, datePos * interval);
+            Bundle bundle = new Bundle();
+            bundle.putLong("date",DbUtil.dateToLong(calendar.getTime()));
+            bundle.putInt("interval", interval);
+            ScreenSlidePageFragment screenSlidePageFragment = new ScreenSlidePageFragment();
+            screenSlidePageFragment.setArguments(bundle);
+            return screenSlidePageFragment;
         }
 
         @Override
         public int getCount() {
             return NUM_PAGES;
+        }
+
+        @Override
+        public int getItemPosition(Object object) {
+            return super.getItemPosition(object);
         }
     }
     public static void expand(final View v) {
@@ -383,5 +435,16 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Toast.makeText(this,"Ok",Toast.LENGTH_LONG).show();
+        mPager.setAdapter(mPagerAdapter);
+        mPagerAdapter.notifyDataSetChanged();
+    }
+    protected void initTransactions(){
+        beginTransation = transactionDao.getFirstTransaction();
+        endTransaction = transactionDao.getLastTransaction();
+
+        Long days = (DbUtil.dateToLong(new Date()) - DbUtil.dateToLong(beginTransation.getT_date()));
+        days = days / (24 * 60 * 60 * 1000);
+        dayCount = days.intValue() + 1;
+        NUM_PAGES = (dayCount /interval)==0?1:(dayCount /interval);
     }
 }
