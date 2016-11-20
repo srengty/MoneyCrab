@@ -1,17 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:id="@+id/content">
-    <TextView
+    android:layout_height="match_parent">
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:id="@+id/textViewDate"/>
-    <com.github.mikephil.charting.charts.PieChart
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:id="@+id/content">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:id="@+id/textViewDate"/>
+        <com.github.mikephil.charting.charts.PieChart
             android:id="@+id/chart1"
             android:layout_weight="1"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
+    </LinearLayout>
+    <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:id="@+id/layoutBalance"
+    android:background="@color/white">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:orientation="horizontal">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_three_lines"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="10dp"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/balance"
+                android:background="@drawable/round_button"
+                android:id="@+id/buttonBalance"/>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_three_lines"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="10dp"/>
+        </LinearLayout>
+    </RelativeLayout>
+    <com.camant.moneycrab.view.AnimatedExpandableListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/listViewBalance"
+        android:layout_weight="1"/>
 </LinearLayout>
+</FrameLayout>

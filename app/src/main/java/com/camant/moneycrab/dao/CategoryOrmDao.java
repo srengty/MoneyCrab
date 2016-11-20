@@ -19,7 +19,10 @@ public class CategoryOrmDao extends CategoryDao {
         categoryTypeDao = new CategoryTypeDao(context);
     }
     public ArrayList<CategoryOrm> getAllLazily(){
-        ArrayList<Category> categories = getAll();
+        return getAllLazily(null);
+    }
+    public ArrayList<CategoryOrm> getAllLazily(Integer ctype){
+        ArrayList<Category> categories = getAll(dbHelper.getReadableDatabase(), ctype);
         ArrayList<CategoryOrm> categoryOrms = new ArrayList<>();
         CategoryOrm categoryOrm;
         for(Category c:categories){

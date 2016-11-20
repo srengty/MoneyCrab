@@ -57,4 +57,12 @@ public class AccountOrm extends Account {
     public void setCurrency(Currency currency) {
         this.currency = currency;
     }
+
+    @Override
+    public String toString() {
+        if(getCurrency() != null) {
+            return super.toString() + " (" + getCurrency().getName() + ")";
+        }
+        return super.toString();
+    }
 }

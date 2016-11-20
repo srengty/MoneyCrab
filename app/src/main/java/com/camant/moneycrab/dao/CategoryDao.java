@@ -23,9 +23,23 @@ public class CategoryDao extends BaseDao<Category> {
 
     @Override
     protected ArrayList<Category> getAll(SQLiteDatabase readableDatabase) {
+        return getAll(readableDatabase, null);
+    }
+
+    protected ArrayList<Category> getAll(SQLiteDatabase readableDatabase, Integer ctype) {
         ArrayList<Category> categories = new ArrayList<>();
         Category category = new Category();
-        Cursor cursor = readableDatabase.rawQuery("SELECT * FROM "+category.getTableName()+" ORDER BY ctype ASC",new String[]{});
+        String sql = "SELECT * FROM "+category.getTableName();
+        if(ctype != null){
+            sql += " WHERE ctype=?";
+        }
+        sql += " ORDER BY ctype ASC";
+        Cursor cursor = null;
+        if(ctype != null) {
+            cursor = readableDatabase.rawQuery(sql, new String[]{""+ctype});
+        }else{
+            cursor = readableDatabase.rawQuery(sql, new String[]{});
+        }
         if(cursor.moveToFirst()){
             do{
                 categories.add(buildFromCursor(cursor));

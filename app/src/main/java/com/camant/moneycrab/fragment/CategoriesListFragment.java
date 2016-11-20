@@ -12,6 +12,7 @@ import com.camant.moneycrab.R;
 import com.camant.moneycrab.adapter.CategoriesAdapter;
 import com.camant.moneycrab.dao.CategoryOrmDao;
 import com.camant.moneycrab.orm.CategoryOrm;
+import com.camant.moneycrab.orm.TransactionOrm;
 import com.camant.moneycrab.view.CategoriesView;
 
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
  */
 public class CategoriesListFragment extends TransactionBaseFragment implements View.OnClickListener, CategoriesAdapter.OnItemClickListener {
     private ArrayList<CategoryOrm> categoryOrms = new ArrayList<>();
+    private TransactionOrm transactionOrm;
 
     public CategoriesListFragment() {
         // Required empty public constructor
@@ -33,7 +35,17 @@ public class CategoriesListFragment extends TransactionBaseFragment implements V
         View view = inflater.inflate(R.layout.fragment_categories_list, container, false);
         CategoryOrmDao categoryOrmDao = new CategoryOrmDao(this.getActivity());
         categoryOrms.clear();
-        categoryOrms.addAll(categoryOrmDao.getAllLazily());
+        if(getArguments() == null || !getArguments().containsKey("category_type")) {
+            categoryOrms.addAll(categoryOrmDao.getAllLazily());
+        }else{
+            categoryOrms.addAll(categoryOrmDao.getAllLazily(getArguments().getInt("category_type")));
+        }
+        if(getArguments() != null && getArguments().containsKey("transaction")){
+            transactionOrm = getArguments().getParcelable("transaction");
+        }
+        if(transactionOrm != null){
+//
+        }
         CategoriesView categoriesView = (CategoriesView)view.findViewById(R.id.categoriesView);
         categoriesView.setData(categoryOrms);
         categoriesView.setOnItemClickListener(this);

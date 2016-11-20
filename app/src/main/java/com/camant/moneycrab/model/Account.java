@@ -93,6 +93,6 @@ public class Account extends MoneyBase {
 
     @Override
     public String toString() {
-        return ""+name;
+        return name==null?"":name;
     }
 }

@@ -1,6 +1,7 @@
 package com.camant.moneycrab;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -8,6 +9,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -17,6 +20,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
@@ -27,6 +31,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.camant.moneycrab.activity.TransactionMinusActivity;
 import com.camant.moneycrab.activity.TransactionPlusActivity;
 import com.camant.moneycrab.adapter.ExpandableListAdapter;
 import com.camant.moneycrab.anim.ZoomOutPageTransformer;
@@ -59,12 +64,14 @@ public class MainActivity extends AppCompatActivity
     ExpandableListAdapter listAdapter;
     AnimatedExpandableListView expListView;
     List<String> listDataHeader;
-    HashMap<String, List<MoneyBase>> listDataChild;
+    HashMap<String, List<? extends MoneyBase>> listDataChild;
     TransactionDao transactionDao;
     private int dayCount = 1;
     private int interval = 1;
     private Transaction beginTransation, endTransaction;
     private Calendar calendar = Calendar.getInstance();
+    private ArrayList<AccountOrm> accounts = new ArrayList<>();
+    private long accountId = 0;
     /**
      * The number of pages (wizard steps) to show in this demo.
      */
@@ -85,11 +92,11 @@ public class MainActivity extends AppCompatActivity
         fabMinus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, TransactionPlusActivity.class);
+                Intent intent = new Intent(MainActivity.this, TransactionMinusActivity.class);
                 intent.putExtra("user",false);
-                startActivityForResult(intent, TRANSACTION_PLUS);
+                startActivityForResult(intent, TRANSACTION_PLUS);/*
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                        .setAction("Action", null).show();*/
             }
         });
         FloatingActionButton fabPlus = (FloatingActionButton) findViewById(R.id.fabPlus);
@@ -98,9 +105,9 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, TransactionPlusActivity.class);
                 intent.putExtra("user",false);
-                startActivityForResult(intent, TRANSACTION_MINUS);
+                startActivityForResult(intent, TRANSACTION_MINUS);/*
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                        .setAction("Action", null).show();*/
             }
         });
 
@@ -114,8 +121,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         NavigationView navigationViewRight = (NavigationView) findViewById(R.id.nav_view_right);
         Spinner spinner = (Spinner)navigationViewRight.findViewById(R.id.spinner);
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,
-                new String[]{"Aaccount A","Account B","Account C"});
+        ArrayAdapter<AccountOrm> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, accounts);
         spinner.setAdapter(arrayAdapter);
         spinner.setOnItemClickListener(this);
 
@@ -190,6 +196,7 @@ public class MainActivity extends AppCompatActivity
                 return false;
             }
         });
+
     }
 
     /*
@@ -197,7 +204,7 @@ public class MainActivity extends AppCompatActivity
      */
     private void prepareListData() {
         listDataHeader = new ArrayList<String>();
-        listDataChild = new HashMap<String, List<MoneyBase>>();
+        listDataChild = new HashMap<>();
 
         // Adding child data
         listDataHeader.add(getString(R.string.accounts));
@@ -209,11 +216,12 @@ public class MainActivity extends AppCompatActivity
         ArrayList<AccountOrm> orms = accountOrmDao.getAllLazily();
 
         // Adding child data
-        List<MoneyBase> top250 = new ArrayList<>();
+        accounts.clear();
         Account a = new Account();
         a.setName("");
-        top250.add(a);
-        top250.addAll(orms);
+        a.setId(0);
+        accounts.add(new AccountOrm(a));
+        accounts.addAll(orms);
 
         /*top250.add("The Shawshank Redemption");
         top250.add("The Godfather");
@@ -253,7 +261,7 @@ public class MainActivity extends AppCompatActivity
         comingSoon.add("The Canyons");
         comingSoon.add("Europa Report");*/
 
-        listDataChild.put(listDataHeader.get(0), top250); // Header, Child data
+        listDataChild.put(listDataHeader.get(0), accounts); // Header, Child data
         listDataChild.put(listDataHeader.get(1), nowShowing);
         listDataChild.put(listDataHeader.get(2), comingSoon);
     }
@@ -325,6 +333,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
         Toast.makeText(this,""+adapterView.getItemAtPosition(i), Toast.LENGTH_LONG).show();
     }
 
@@ -435,14 +444,22 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Toast.makeText(this,"Ok",Toast.LENGTH_LONG).show();
+        initTransactions();
         mPager.setAdapter(mPagerAdapter);
         mPagerAdapter.notifyDataSetChanged();
+        mPager.setCurrentItem(NUM_PAGES-1);
     }
     protected void initTransactions(){
         beginTransation = transactionDao.getFirstTransaction();
         endTransaction = transactionDao.getLastTransaction();
 
-        Long days = (DbUtil.dateToLong(new Date()) - DbUtil.dateToLong(beginTransation.getT_date()));
+        Date now = new Date();
+        long begin = DbUtil.dateToLong(now);
+
+        Long days = 0l;
+        if(beginTransation != null) {
+            days = (DbUtil.dateToLong(now) - DbUtil.dateToLong(beginTransation.getT_date()));
+        }
         days = days / (24 * 60 * 60 * 1000);
         dayCount = days.intValue() + 1;
         NUM_PAGES = (dayCount /interval)==0?1:(dayCount /interval);

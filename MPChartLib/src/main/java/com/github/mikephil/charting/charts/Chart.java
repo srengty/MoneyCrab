@@ -1263,6 +1263,9 @@ public abstract class Chart<T extends ChartData<? extends IDataSet<? extends Ent
     public LegendRenderer getLegendRenderer() {
         return mLegendRenderer;
     }
+    public void setLegendRenderer(LegendRenderer legendRenderer){
+        mLegendRenderer = legendRenderer;
+    }
 
     /**
      * Returns the rectangle that defines the borders of the chart-value surface

@@ -12,6 +12,8 @@ import java.util.Date;
  */
 
 public abstract class MoneyBase implements Parcelable {
+    public static final int CATEGORY_TYPE_EXPENSES = 1;
+    public static final int CATEGORY_TYPE_INCOMES = 2;
     protected String tableName;
     private long id;
     private Date created;

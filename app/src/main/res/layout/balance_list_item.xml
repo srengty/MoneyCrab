@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/cardview_shadow_end_color">
+    <ImageView
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:scaleType="fitCenter"
+        android:layout_gravity="center_vertical"
+        android:src="@drawable/ic_income_type"
+        android:id="@+id/imageViewIcon"
+        android:layout_marginStart="?android:attr/expandableListPreferredChildPaddingLeft"/>
+    <TextView
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/textViewDate"/>
+    <TextView
+        android:id="@+id/lblListItem"
+        android:layout_width="0dp"
+        android:layout_height="38dp"
+        android:textSize="17sp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:layout_weight="1" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="38dp"
+        android:id="@+id/textViewAmount"
+        android:textAlignment="textEnd"
+        android:gravity="center_vertical|end"
+        android:layout_marginEnd="5dp"/>
+
+</LinearLayout>

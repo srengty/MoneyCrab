@@ -21,4 +21,6 @@ public class DbUtil {
         return new Date(dateLong);
     }
     public static final String DEFAULT_DATE_FORMAT = "dd/MM/yyyy";
+    public static final String DEFAULT_DAY_MONTH_FORMAT = "dd/MM";
+    public static final String DEFAULT_NUMBER_FORMAT = "###,##0.00";
 }

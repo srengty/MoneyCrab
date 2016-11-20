@@ -11,12 +11,14 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 
 import com.camant.moneycrab.R;
+import com.camant.moneycrab.orm.TransactionOrm;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class TransactionNoteFragment extends TransactionBaseFragment {
     private EditText editText;
+    private TransactionOrm transactionOrm = null;
 
     public TransactionNoteFragment() {
         // Required empty public constructor
@@ -32,6 +34,18 @@ public class TransactionNoteFragment extends TransactionBaseFragment {
         Button button = (Button)view.findViewById(R.id.buttonChooseCategory);
         final CategoriesListFragment categoriesListFragment = new CategoriesListFragment();
         categoriesListFragment.setTransactionDataListener(this.transactionDataListener);
+        Bundle bundle = getArguments();
+        if(bundle == null){
+            bundle = new Bundle();
+        }else{
+            if(bundle.containsKey("transaction")){
+                transactionOrm = bundle.getParcelable("transaction");
+            }
+        }
+        if(transactionOrm != null){
+            editText.setText(transactionOrm.getNote());
+        }
+        categoriesListFragment.setArguments(bundle);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

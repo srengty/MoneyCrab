@@ -31,4 +31,23 @@ public class TransactionOrmDao extends TransactionDao {
         }
         return transactionOrms;
     }
+
+    /**
+     * Get all transactions that is in between from and to.
+     * @param from start date in millis
+     * @param to end date in millis
+     * @return
+     */
+    public ArrayList<TransactionOrm> getAllLazily(long from, long to){
+        ArrayList<Transaction> transactions = getAll(from, to);
+        ArrayList<TransactionOrm> transactionOrms = new ArrayList<>();
+        TransactionOrm transactionOrm;
+        for(Transaction t:transactions){
+            transactionOrm = new TransactionOrm(t);
+            transactionOrm.setAccountOrm(accountOrmDao.getByIdLazily(t.getAccountId()));
+            transactionOrm.setCategoryOrm(categoryOrmDao.getByIdLazily(t.getCategoryId()));
+            transactionOrms.add(transactionOrm);
+        }
+        return transactionOrms;
+    }
 }
