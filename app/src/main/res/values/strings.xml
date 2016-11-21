@@ -22,4 +22,8 @@
     <string name="choose_category">Choose Category</string>
     <string name="delete">Delete</string>
     <string name="balance">Balance</string>
+    <string name="currency_name">Currency Name</string>
+    <string name="currency_sign">Sign</string>
+    <string name="currency_name_hint">Riel</string>
+    <string name="currency_sign_hint">R</string>
 </resources>

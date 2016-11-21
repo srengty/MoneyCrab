@@ -6,6 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ExpandableListView;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,11 +23,12 @@ import java.util.List;
  * Created by sreng on 11/15/2016.
  */
 
-public class ExpandableListAdapter extends AnimatedExpandableListView.AnimatedExpandableListAdapter {
+public class ExpandableListAdapter extends AnimatedExpandableListView.AnimatedExpandableListAdapter implements View.OnClickListener {
     private Context _context;
     private List<String> _listDataHeader; // header titles
     // child data in format of header title, child title
     private HashMap<String, List<? extends MoneyBase>> _listDataChild;
+    private OnChildAddListener onChildAddListener = null;
 
     public ExpandableListAdapter(Context context, List<String> listDataHeader,
                                  HashMap<String, List<? extends MoneyBase>> listChildData) {
@@ -66,7 +69,9 @@ public class ExpandableListAdapter extends AnimatedExpandableListView.AnimatedEx
             convertView = infalInflater.inflate(R.layout.expandable_list_item_alt, null);
             TextView txtListChild = (TextView) convertView
                     .findViewById(R.id.lblListItem);
-
+            ImageView imageView = (ImageView) convertView.findViewById(R.id.imageViewAdd);
+            imageView.setTag(child);
+            imageView.setOnClickListener(this);
             txtListChild.setText(child.toString());
         }
         return convertView;
@@ -118,5 +123,19 @@ public class ExpandableListAdapter extends AnimatedExpandableListView.AnimatedEx
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
         return true;
+    }
+
+    public void setOnChildAddListener(OnChildAddListener onChildAddListener) {
+        this.onChildAddListener = onChildAddListener;
+    }
+
+    @Override
+    public void onClick(View view) {
+        if(view.getTag() != null && onChildAddListener != null){
+            onChildAddListener.onAddClick(view.getTag());
+        }
+    }
+    public interface OnChildAddListener{
+        void onAddClick(Object o);
     }
 }

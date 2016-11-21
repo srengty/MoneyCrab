@@ -31,6 +31,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.camant.moneycrab.activity.CurrencyActivity;
 import com.camant.moneycrab.activity.TransactionMinusActivity;
 import com.camant.moneycrab.activity.TransactionPlusActivity;
 import com.camant.moneycrab.adapter.ExpandableListAdapter;
@@ -58,9 +59,10 @@ import java.util.HashMap;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, AdapterView.OnItemClickListener, ExpandableListView.OnGroupClickListener, ExpandableListView.OnGroupExpandListener {
+        implements NavigationView.OnNavigationItemSelectedListener, AdapterView.OnItemClickListener, ExpandableListView.OnGroupClickListener, ExpandableListView.OnGroupExpandListener, ExpandableListAdapter.OnChildAddListener {
     private static final int TRANSACTION_PLUS = 1;
     private static final int TRANSACTION_MINUS = 2;
+    private static final int CURRENCY_ADD = 3;
     ExpandableListAdapter listAdapter;
     AnimatedExpandableListView expListView;
     List<String> listDataHeader;
@@ -171,6 +173,7 @@ public class MainActivity extends AppCompatActivity
 
         // setting list adapter
         expListView.setAdapter(listAdapter);
+        listAdapter.setOnChildAddListener(this);
         expListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
             public boolean onChildClick(ExpandableListView expandableListView, View view, int groupPos, int childPos, long id) {
@@ -184,15 +187,9 @@ public class MainActivity extends AppCompatActivity
                         //update currency
                     }
                 }else{
-                    if(moneyBase instanceof AccountOrm){
-                        //add new account
-                    }else if(moneyBase instanceof CategoryType){
-                        //add new category
-                    }else if(moneyBase instanceof Currency){
-                        //add new currency
-                    }
+
                 }
-                Toast.makeText(MainActivity.this, ""+moneyBase.getTableName()+": "+moneyBase, Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, childPos+","+moneyBase.getTableName()+": "+moneyBase, Toast.LENGTH_LONG).show();
                 return false;
             }
         });
@@ -352,6 +349,19 @@ public class MainActivity extends AppCompatActivity
         if(groupPosition != previousGroup)
             expListView.collapseGroupWithAnimation(previousGroup);
         previousGroup = groupPosition;
+    }
+
+    @Override
+    public void onAddClick(Object moneyBase) {
+        if(moneyBase instanceof AccountOrm){
+            //add new account
+        }else if(moneyBase instanceof CategoryType){
+            //add new category
+        }else if(moneyBase instanceof Currency){
+            //add new currency
+            Intent intent = new Intent(getBaseContext(), CurrencyActivity.class);
+            startActivityForResult(intent, CURRENCY_ADD);
+        }
     }
 
     /**

@@ -20,7 +20,8 @@
         </activity>
         <activity android:name=".activity.TransactionPlusActivity" />
         <activity android:name=".activity.TransactionMinusActivity" />
-        <activity android:name=".activity.TransactionUpdateActivity"></activity>
+        <activity android:name=".activity.TransactionUpdateActivity" />
+        <activity android:name=".activity.CurrencyActivity"></activity>
     </application>
 
 </manifest>
