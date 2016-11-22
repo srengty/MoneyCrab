@@ -41,6 +41,7 @@ import com.camant.moneycrab.dao.CategoryOrmDao;
 import com.camant.moneycrab.dao.CurrencyDao;
 import com.camant.moneycrab.dao.TransactionDao;
 import com.camant.moneycrab.fragment.ScreenSlidePageFragment;
+import com.camant.moneycrab.helper.ProgressBarHelper;
 import com.camant.moneycrab.model.Account;
 import com.camant.moneycrab.model.CategoryType;
 import com.camant.moneycrab.model.Currency;
@@ -357,8 +358,11 @@ public class MainActivity extends AppCompatActivity
             //add new account
         }else if(moneyBase instanceof CategoryType){
             //add new category
+            CategoryType categoryType = (CategoryType) moneyBase;
+            Toast.makeText(this, ""+categoryType.getName(), Toast.LENGTH_LONG).show();
         }else if(moneyBase instanceof Currency){
             //add new currency
+            ProgressBarHelper.showLoadingDialog(this);
             Intent intent = new Intent(getBaseContext(), CurrencyActivity.class);
             startActivityForResult(intent, CURRENCY_ADD);
         }
@@ -453,11 +457,15 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Toast.makeText(this,"Ok",Toast.LENGTH_LONG).show();
-        initTransactions();
-        mPager.setAdapter(mPagerAdapter);
-        mPagerAdapter.notifyDataSetChanged();
-        mPager.setCurrentItem(NUM_PAGES-1);
+        if(requestCode == CURRENCY_ADD){
+            ProgressBarHelper.hideLoadingDialog();
+        }else {
+            Toast.makeText(this, "Ok", Toast.LENGTH_LONG).show();
+            initTransactions();
+            mPager.setAdapter(mPagerAdapter);
+            mPagerAdapter.notifyDataSetChanged();
+            mPager.setCurrentItem(NUM_PAGES - 1);
+        }
     }
     protected void initTransactions(){
         beginTransation = transactionDao.getFirstTransaction();

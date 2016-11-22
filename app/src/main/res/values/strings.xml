@@ -26,4 +26,7 @@
     <string name="currency_sign">Sign</string>
     <string name="currency_name_hint">Riel</string>
     <string name="currency_sign_hint">R</string>
+    <string name="ok">Ok</string>
+    <string name="currency_name_required">Currency name is required!</string>
+    <string name="currency_sign_required">Currency Sign is required!</string>
 </resources>
