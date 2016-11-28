@@ -1,16 +1,12 @@
 package com.camant.moneycrab;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.DisplayMetrics;
-import android.util.TypedValue;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -20,7 +16,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
@@ -31,6 +26,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.camant.moneycrab.activity.CategoryActivity;
 import com.camant.moneycrab.activity.CurrencyActivity;
 import com.camant.moneycrab.activity.TransactionMinusActivity;
 import com.camant.moneycrab.activity.TransactionPlusActivity;
@@ -63,7 +59,8 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, AdapterView.OnItemClickListener, ExpandableListView.OnGroupClickListener, ExpandableListView.OnGroupExpandListener, ExpandableListAdapter.OnChildAddListener {
     private static final int TRANSACTION_PLUS = 1;
     private static final int TRANSACTION_MINUS = 2;
-    private static final int CURRENCY_ADD = 3;
+    private static final int CURRENCY_REQUEST_CODE = 3;
+    private static final int CATEGORY_REQUEST_CODE = 4;
     ExpandableListAdapter listAdapter;
     AnimatedExpandableListView expListView;
     List<String> listDataHeader;
@@ -73,7 +70,6 @@ public class MainActivity extends AppCompatActivity
     private int interval = 1;
     private Transaction beginTransation, endTransaction;
     private Calendar calendar = Calendar.getInstance();
-    private ArrayList<AccountOrm> accounts = new ArrayList<>();
     private long accountId = 0;
     /**
      * The number of pages (wizard steps) to show in this demo.
@@ -83,6 +79,9 @@ public class MainActivity extends AppCompatActivity
     private ViewPager mPager;
     private ScreenSlidePagerAdapter mPagerAdapter;
     private int previousGroup = -1;
+    private ArrayList<AccountOrm> accounts = new ArrayList<>();
+    private List<MoneyBase> currencies = new ArrayList<>();
+    private List<MoneyBase> categories = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -186,6 +185,10 @@ public class MainActivity extends AppCompatActivity
                         //update category
                     }else if(moneyBase instanceof Currency){
                         //update currency
+                        ProgressBarHelper.showLoadingDialog(MainActivity.this);
+                        Intent intent = new Intent(getBaseContext(), CurrencyActivity.class);
+                        intent.putExtra("currency", moneyBase);
+                        startActivityForResult(intent, CURRENCY_REQUEST_CODE);
                     }
                 }else{
 
@@ -210,16 +213,9 @@ public class MainActivity extends AppCompatActivity
         listDataHeader.add(getString(R.string.currencies));
 
         // Accounts
-        AccountOrmDao accountOrmDao = new AccountOrmDao(this);
-        ArrayList<AccountOrm> orms = accountOrmDao.getAllLazily();
 
         // Adding child data
-        accounts.clear();
-        Account a = new Account();
-        a.setName("");
-        a.setId(0);
-        accounts.add(new AccountOrm(a));
-        accounts.addAll(orms);
+        reloadAccounts();
 
         /*top250.add("The Shawshank Redemption");
         top250.add("The Godfather");
@@ -229,30 +225,15 @@ public class MainActivity extends AppCompatActivity
         top250.add("The Dark Knight");
         top250.add("12 Angry Men");*/
 
-        CategoryOrmDao categoryOrmDao = new CategoryOrmDao(this);
-        ArrayList<CategoryOrm> categoryOrms = categoryOrmDao.getAllLazily();
-        List<MoneyBase> nowShowing = new ArrayList<>();
-        String name = "";
-        for(CategoryOrm co:categoryOrms){
-            if(!name.equals(co.getCategoryType().getName())){
-                nowShowing.add(co.getCategoryType());
-                name = co.getCategoryType().getName();
-            }
-            nowShowing.add(co);
-        }
-        /*nowShowing.add("The Conjuring");
-        nowShowing.add("Despicable Me 2");
-        nowShowing.add("Turbo");
-        nowShowing.add("Grown Ups 2");
-        nowShowing.add("Red 2");
-        nowShowing.add("The Wolverine");*/
+        reloadCategories();
+        /*categories.add("The Conjuring");
+        categories.add("Despicable Me 2");
+        categories.add("Turbo");
+        categories.add("Grown Ups 2");
+        categories.add("Red 2");
+        categories.add("The Wolverine");*/
 
-        List<MoneyBase> comingSoon = new ArrayList<>();
-        Currency cur = new Currency();
-        cur.setName("");
-        comingSoon.add(cur);
-        CurrencyDao currencyDao = new CurrencyDao(this);
-        comingSoon.addAll(currencyDao.getAll());
+        reloadCurrencies();
         /*comingSoon.add("2 Guns");
         comingSoon.add("The Smurfs 2");
         comingSoon.add("The Spectacular Now");
@@ -260,8 +241,39 @@ public class MainActivity extends AppCompatActivity
         comingSoon.add("Europa Report");*/
 
         listDataChild.put(listDataHeader.get(0), accounts); // Header, Child data
-        listDataChild.put(listDataHeader.get(1), nowShowing);
-        listDataChild.put(listDataHeader.get(2), comingSoon);
+        listDataChild.put(listDataHeader.get(1), categories);
+        listDataChild.put(listDataHeader.get(2), currencies);
+    }
+    private void reloadAccounts(){
+        AccountOrmDao accountOrmDao = new AccountOrmDao(this);
+        ArrayList<AccountOrm> orms = accountOrmDao.getAllLazily();
+        accounts.clear();
+        Account a = new Account();
+        a.setName("");
+        a.setId(0);
+        accounts.add(new AccountOrm(a));
+        accounts.addAll(orms);
+    }
+    private void reloadCategories(){
+        CategoryOrmDao categoryOrmDao = new CategoryOrmDao(this);
+        ArrayList<CategoryOrm> categoryOrms = categoryOrmDao.getAllLazily();
+        categories.clear();
+        String name = "";
+        for(CategoryOrm co:categoryOrms){
+            if(!name.equals(co.getCategoryType().getName())){
+                categories.add(co.getCategoryType());
+                name = co.getCategoryType().getName();
+            }
+            categories.add(co);
+        }
+    }
+    private void reloadCurrencies(){
+        currencies.clear();
+        Currency cur = new Currency();
+        cur.setName("");
+        currencies.add(cur);
+        CurrencyDao currencyDao = new CurrencyDao(this);
+        currencies.addAll(currencyDao.getAll());
     }
 
     @Override
@@ -356,15 +368,18 @@ public class MainActivity extends AppCompatActivity
     public void onAddClick(Object moneyBase) {
         if(moneyBase instanceof AccountOrm){
             //add new account
+
         }else if(moneyBase instanceof CategoryType){
             //add new category
             CategoryType categoryType = (CategoryType) moneyBase;
             Toast.makeText(this, ""+categoryType.getName(), Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(getBaseContext(), CategoryActivity.class);
+            startActivityForResult(intent, CATEGORY_REQUEST_CODE);
         }else if(moneyBase instanceof Currency){
             //add new currency
             ProgressBarHelper.showLoadingDialog(this);
             Intent intent = new Intent(getBaseContext(), CurrencyActivity.class);
-            startActivityForResult(intent, CURRENCY_ADD);
+            startActivityForResult(intent, CURRENCY_REQUEST_CODE);
         }
     }
 
@@ -457,8 +472,10 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == CURRENCY_ADD){
+        if(requestCode == CURRENCY_REQUEST_CODE){
             ProgressBarHelper.hideLoadingDialog();
+            reloadCurrencies();
+            listAdapter.notifyDataSetChanged();
         }else {
             Toast.makeText(this, "Ok", Toast.LENGTH_LONG).show();
             initTransactions();

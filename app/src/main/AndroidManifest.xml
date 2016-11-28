@@ -21,7 +21,8 @@
         <activity android:name=".activity.TransactionPlusActivity" />
         <activity android:name=".activity.TransactionMinusActivity" />
         <activity android:name=".activity.TransactionUpdateActivity" />
-        <activity android:name=".activity.CurrencyActivity"></activity>
+        <activity android:name=".activity.CurrencyActivity" />
+        <activity android:name=".activity.CategoryActivity"></activity>
     </application>
 
 </manifest>

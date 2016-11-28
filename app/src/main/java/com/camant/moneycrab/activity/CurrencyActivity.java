@@ -67,6 +67,8 @@ public class CurrencyActivity extends MoneyBaseActivity {
                     error = true;
                 }
                 if(!error) {
+                    currency.setName(editTextName.getText().toString());
+                    currency.setAlt(editTextSign.getText().toString());
                     CurrencyDao currencyDao = new CurrencyDao(this);
                     if (currency.getId() > 0) {//update
                         currencyDao.update(currency);
