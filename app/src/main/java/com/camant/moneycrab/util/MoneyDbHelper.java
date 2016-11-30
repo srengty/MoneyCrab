@@ -17,9 +17,11 @@ public class MoneyDbHelper extends SQLiteOpenHelper {
     public static final String TABLE_CATEGORIES = "categories";
     public static final String TABLE_CATEGORY_TYPES = "category_types";
     public static final String TABLE_TRANSACTIONS = "transactions";
+    private Context context;
 
     public MoneyDbHelper(Context context) {
         super(context, DB_NAME, null, VERSION);
+        this.context = context;
     }
 
     @Override
@@ -29,10 +31,31 @@ public class MoneyDbHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-        dropStructure(sqLiteDatabase);
-        buildStructure(sqLiteDatabase);
-        createDefaults(sqLiteDatabase);
+    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
+        //context.getAssets().list("");
+        if(oldVersion == 3 && newVersion == 4){
+            upgrade_3_4(sqLiteDatabase);
+        }else {
+            dropStructure(sqLiteDatabase);
+            buildStructure(sqLiteDatabase);
+            createDefaults(sqLiteDatabase);
+        }
+    }
+
+    private void upgrade_3_4(SQLiteDatabase sqLiteDatabase) {
+        sqLiteDatabase.execSQL("CREATE TABLE `icons`(" +
+                " `id` INTEGER PRIMARY KEY AUTOINCREMENT," +
+                " `name` TEXT," +
+                " `alt` TEXT," +
+                " `path` TEXT," +
+                " `created` INTEGER," +
+                " `modified` INTEGER)");
+        sqLiteDatabase.execSQL("INSERT INTO icons VALUES" +
+                " (1, 'Food', 'Food for home use', 'food.png','2016-11-29', '2016-11-29')" +
+                ", (2, 'Car', 'Own car or motor', 'car.png','2016-11-29', '2016-11-29')" +
+                ", (3, 'Sport', 'Sports', 'football.png','2016-11-29', '2016-11-29')" +
+                ", (4, 'Taxi', 'Taxi and motodup', 'taxi.png','2016-11-29', '2016-11-29')" +
+                ", (5, 'Party', 'Party', 'party.png','2016-11-29', '2016-11-29')" );
     }
 
     @Override
@@ -81,6 +104,13 @@ public class MoneyDbHelper extends SQLiteOpenHelper {
                 "`modified` INTEGER," +
                 "`category_id` INTEGER," +
                 "`account_id` INTEGER )");
+        db.execSQL("CREATE TABLE `icons`(" +
+                " `id` INTEGER PRIMARY KEY AUTOINCREMENT," +
+                " `name` TEXT," +
+                " `alt` TEXT," +
+                " `path` TEXT," +
+                " `created` INTEGER," +
+                " `modified` INTEGER)");
     }
     private void dropStructure(SQLiteDatabase db){
         db.execSQL("drop table `accounts`;");
@@ -104,5 +134,11 @@ public class MoneyDbHelper extends SQLiteOpenHelper {
         db.execSQL("INSERT INTO accounts values" +
                 "(1, 'Home',1,'Khmer Riel','icon.jpg','2016-11-16','2016-11-16')" +
                 ", (2, 'CamAnt',1,'USA Dollar','icon.jpg','2016-11-16','2016-11-16')");
+        db.execSQL("INSERT INTO icons VALUES" +
+                " (1, 'Food', 'Food for home use', 'food.png','2016-11-29', '2016-11-29')" +
+                ", (2, 'Car', 'Own car or motor', 'car.png','2016-11-29', '2016-11-29')" +
+                ", (3, 'Sport', 'Sports', 'football.png','2016-11-29', '2016-11-29')" +
+                ", (4, 'Taxi', 'Taxi and motodup', 'taxi.png','2016-11-29', '2016-11-29')" +
+                ", (5, 'Party', 'Party', 'party.png','2016-11-29', '2016-11-29')" );
     }
 }

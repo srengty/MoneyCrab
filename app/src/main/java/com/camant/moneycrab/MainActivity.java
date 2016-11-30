@@ -37,6 +37,9 @@ import com.camant.moneycrab.dao.CategoryOrmDao;
 import com.camant.moneycrab.dao.CurrencyDao;
 import com.camant.moneycrab.dao.TransactionDao;
 import com.camant.moneycrab.fragment.ScreenSlidePageFragment;
+import com.camant.moneycrab.helper.AccountHelper;
+import com.camant.moneycrab.helper.CategoryHelper;
+import com.camant.moneycrab.helper.CurrencyHelper;
 import com.camant.moneycrab.helper.ProgressBarHelper;
 import com.camant.moneycrab.model.Account;
 import com.camant.moneycrab.model.CategoryType;
@@ -80,8 +83,11 @@ public class MainActivity extends AppCompatActivity
     private ScreenSlidePagerAdapter mPagerAdapter;
     private int previousGroup = -1;
     private ArrayList<AccountOrm> accounts = new ArrayList<>();
-    private List<MoneyBase> currencies = new ArrayList<>();
-    private List<MoneyBase> categories = new ArrayList<>();
+    private ArrayList<Currency> currencies = new ArrayList<>();
+    private ArrayList<MoneyBase> categories = new ArrayList<>();
+    private AccountHelper accountHelper = new AccountHelper(this);
+    private CategoryHelper categoryHelper = new CategoryHelper(this);
+    private CurrencyHelper currencyHelper = new CurrencyHelper(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -212,68 +218,24 @@ public class MainActivity extends AppCompatActivity
         listDataHeader.add(getString(R.string.categories));
         listDataHeader.add(getString(R.string.currencies));
 
-        // Accounts
-
-        // Adding child data
-        reloadAccounts();
-
-        /*top250.add("The Shawshank Redemption");
-        top250.add("The Godfather");
-        top250.add("The Godfather: Part II");
-        top250.add("Pulp Fiction");
-        top250.add("The Good, the Bad and the Ugly");
-        top250.add("The Dark Knight");
-        top250.add("12 Angry Men");*/
+        loadAccounts();
 
         reloadCategories();
-        /*categories.add("The Conjuring");
-        categories.add("Despicable Me 2");
-        categories.add("Turbo");
-        categories.add("Grown Ups 2");
-        categories.add("Red 2");
-        categories.add("The Wolverine");*/
 
         reloadCurrencies();
-        /*comingSoon.add("2 Guns");
-        comingSoon.add("The Smurfs 2");
-        comingSoon.add("The Spectacular Now");
-        comingSoon.add("The Canyons");
-        comingSoon.add("Europa Report");*/
 
         listDataChild.put(listDataHeader.get(0), accounts); // Header, Child data
         listDataChild.put(listDataHeader.get(1), categories);
         listDataChild.put(listDataHeader.get(2), currencies);
     }
-    private void reloadAccounts(){
-        AccountOrmDao accountOrmDao = new AccountOrmDao(this);
-        ArrayList<AccountOrm> orms = accountOrmDao.getAllLazily();
-        accounts.clear();
-        Account a = new Account();
-        a.setName("");
-        a.setId(0);
-        accounts.add(new AccountOrm(a));
-        accounts.addAll(orms);
+    private void loadAccounts(){
+        accountHelper.loadAccounts(accounts);
     }
     private void reloadCategories(){
-        CategoryOrmDao categoryOrmDao = new CategoryOrmDao(this);
-        ArrayList<CategoryOrm> categoryOrms = categoryOrmDao.getAllLazily();
-        categories.clear();
-        String name = "";
-        for(CategoryOrm co:categoryOrms){
-            if(!name.equals(co.getCategoryType().getName())){
-                categories.add(co.getCategoryType());
-                name = co.getCategoryType().getName();
-            }
-            categories.add(co);
-        }
+        categoryHelper.loadCategories(categories);
     }
     private void reloadCurrencies(){
-        currencies.clear();
-        Currency cur = new Currency();
-        cur.setName("");
-        currencies.add(cur);
-        CurrencyDao currencyDao = new CurrencyDao(this);
-        currencies.addAll(currencyDao.getAll());
+        currencyHelper.loadCurrencies(currencies);
     }
 
     @Override
@@ -303,9 +265,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
@@ -374,6 +333,7 @@ public class MainActivity extends AppCompatActivity
             CategoryType categoryType = (CategoryType) moneyBase;
             Toast.makeText(this, ""+categoryType.getName(), Toast.LENGTH_LONG).show();
             Intent intent = new Intent(getBaseContext(), CategoryActivity.class);
+            intent.putExtra("category_type", (CategoryType)moneyBase);
             startActivityForResult(intent, CATEGORY_REQUEST_CODE);
         }else if(moneyBase instanceof Currency){
             //add new currency
@@ -415,59 +375,6 @@ public class MainActivity extends AppCompatActivity
         public int getItemPosition(Object object) {
             return super.getItemPosition(object);
         }
-    }
-    public static void expand(final View v) {
-        v.measure(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-        final int targetHeight = v.getMeasuredHeight();
-
-        // Older versions of android (pre API 21) cancel animations for views with a height of 0.
-        v.getLayoutParams().height = 1;
-        v.setVisibility(View.VISIBLE);
-        Animation a = new Animation()
-        {
-            @Override
-            protected void applyTransformation(float interpolatedTime, Transformation t) {
-                v.getLayoutParams().height = interpolatedTime == 1
-                        ? LayoutParams.WRAP_CONTENT
-                        : (int)(targetHeight * interpolatedTime);
-                v.requestLayout();
-            }
-
-            @Override
-            public boolean willChangeBounds() {
-                return true;
-            }
-        };
-
-        // 1dp/ms
-        a.setDuration((int)(targetHeight / v.getContext().getResources().getDisplayMetrics().density));
-        v.startAnimation(a);
-    }
-
-    public static void collapse(final View v) {
-        final int initialHeight = v.getMeasuredHeight();
-
-        Animation a = new Animation()
-        {
-            @Override
-            protected void applyTransformation(float interpolatedTime, Transformation t) {
-                if(interpolatedTime == 1){
-                    v.setVisibility(View.GONE);
-                }else{
-                    v.getLayoutParams().height = initialHeight - (int)(initialHeight * interpolatedTime);
-                    v.requestLayout();
-                }
-            }
-
-            @Override
-            public boolean willChangeBounds() {
-                return true;
-            }
-        };
-
-        // 1dp/ms
-        a.setDuration((int)(initialHeight / v.getContext().getResources().getDisplayMetrics().density));
-        v.startAnimation(a);
     }
 
     @Override

@@ -2,6 +2,9 @@ package com.camant.moneycrab.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -14,6 +17,10 @@ public class CategoryActivity extends BaseCreateUpdateDeleteActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category);
 
+        RecyclerView recyclerView = (RecyclerView)findViewById(R.id.recyclerViewIcons);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        recyclerView.setLayoutManager(linearLayoutManager);
     }
 
     @Override

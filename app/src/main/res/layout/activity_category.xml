@@ -11,9 +11,9 @@
     tools:context="com.camant.moneycrab.activity.CategoryActivity">
     <GridLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_centerVertical="true"
+        android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
+        android:id="@+id/gridLayout"
         android:columnCount="2">
         <TextView android:text="@string/account_name"
             android:layout_row="0"
@@ -56,10 +56,15 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:inputType="textPersonName"
-            android:hint="ICON-01"
+            android:text=":"
             android:ems="10"
             android:id="@+id/textViewIcon"
             android:layout_column="1"/>
     </GridLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/gridLayout"
+        android:id="@+id/recyclerViewIcons"/>
 </RelativeLayout>
