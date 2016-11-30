@@ -34,4 +34,8 @@ public class CategoryHelper extends MoneyBaseHelper {
         }
         return categories;
     }
+
+    public CategoryOrmDao getCategoryOrmDao() {
+        return categoryOrmDao;
+    }
 }

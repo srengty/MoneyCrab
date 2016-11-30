@@ -10,7 +10,7 @@ import com.camant.moneycrab.util.MoneyDbHelper;
 
 public class Category extends MoneyBase {
     private String name;
-    private int ctype;
+    private long ctype;
     private String icon;
     private String alt;
     public Category(){super();}
@@ -37,7 +37,7 @@ public class Category extends MoneyBase {
     @Override
     protected void readFromParcel(Parcel in) {
         name = in.readString();
-        ctype = in.readInt();
+        ctype = in.readLong();
         icon = in.readString();
         alt = in.readString();
     }
@@ -45,7 +45,7 @@ public class Category extends MoneyBase {
     @Override
     protected void storeInParcel(Parcel parcel, int i) {
         parcel.writeString(name);
-        parcel.writeInt(ctype);
+        parcel.writeLong(ctype);
         parcel.writeString(icon);
         parcel.writeString(alt);
     }
@@ -62,11 +62,11 @@ public class Category extends MoneyBase {
      * Category Type
      * @return
      */
-    public int getCtype() {
+    public long getCtype() {
         return ctype;
     }
 
-    public void setCtype(int ctype) {
+    public void setCtype(long ctype) {
         this.ctype = ctype;
     }
 

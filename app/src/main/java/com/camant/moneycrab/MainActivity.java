@@ -26,6 +26,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.camant.moneycrab.activity.AccountActivity;
 import com.camant.moneycrab.activity.CategoryActivity;
 import com.camant.moneycrab.activity.CurrencyActivity;
 import com.camant.moneycrab.activity.TransactionMinusActivity;
@@ -64,6 +65,7 @@ public class MainActivity extends AppCompatActivity
     private static final int TRANSACTION_MINUS = 2;
     private static final int CURRENCY_REQUEST_CODE = 3;
     private static final int CATEGORY_REQUEST_CODE = 4;
+    private static final int ACCOUNT_REQUEST_CODE = 5;
     ExpandableListAdapter listAdapter;
     AnimatedExpandableListView expListView;
     List<String> listDataHeader;
@@ -187,8 +189,17 @@ public class MainActivity extends AppCompatActivity
                 if(childPos > 0 && !(moneyBase instanceof CategoryType)){
                     if(moneyBase instanceof AccountOrm){
                         //update account
+                        AccountOrm accountOrm = (AccountOrm) moneyBase;
+                        Intent intent = new Intent(getBaseContext(), AccountActivity.class);
+                        intent.putExtra("account", accountOrm);
+                        startActivityForResult(intent, ACCOUNT_REQUEST_CODE);
                     }else if(moneyBase instanceof CategoryOrm){
                         //update category
+                        CategoryOrm category = (CategoryOrm) moneyBase;
+                        Intent intent = new Intent(getBaseContext(), CategoryActivity.class);
+                        intent.putExtra("category_type", category.getCategoryType());
+                        intent.putExtra("category", category);
+                        startActivityForResult(intent, CATEGORY_REQUEST_CODE);
                     }else if(moneyBase instanceof Currency){
                         //update currency
                         ProgressBarHelper.showLoadingDialog(MainActivity.this);
@@ -327,7 +338,8 @@ public class MainActivity extends AppCompatActivity
     public void onAddClick(Object moneyBase) {
         if(moneyBase instanceof AccountOrm){
             //add new account
-
+            Intent intent = new Intent(getBaseContext(), AccountActivity.class);
+            startActivityForResult(intent, ACCOUNT_REQUEST_CODE);
         }else if(moneyBase instanceof CategoryType){
             //add new category
             CategoryType categoryType = (CategoryType) moneyBase;
@@ -383,7 +395,15 @@ public class MainActivity extends AppCompatActivity
             ProgressBarHelper.hideLoadingDialog();
             reloadCurrencies();
             listAdapter.notifyDataSetChanged();
-        }else {
+        } else if(requestCode == CATEGORY_REQUEST_CODE){
+            ProgressBarHelper.hideLoadingDialog();
+            reloadCategories();
+            listAdapter.notifyDataSetChanged();
+        } else if(requestCode == ACCOUNT_REQUEST_CODE){
+            ProgressBarHelper.hideLoadingDialog();
+            loadAccounts();
+            listAdapter.notifyDataSetChanged();
+        } else {
             Toast.makeText(this, "Ok", Toast.LENGTH_LONG).show();
             initTransactions();
             mPager.setAdapter(mPagerAdapter);

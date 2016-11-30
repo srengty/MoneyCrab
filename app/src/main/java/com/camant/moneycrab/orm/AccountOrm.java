@@ -14,7 +14,9 @@ public class AccountOrm extends Account {
     private Currency currency;
     public AccountOrm(Parcel in) {
         super(in);
-        currency = in.readParcelable(Currency.class.getClassLoader());
+        if(getCurrencyId()>0) {
+            currency = in.readParcelable(Currency.class.getClassLoader());
+        }
     }
     public AccountOrm(Account account){
         super();

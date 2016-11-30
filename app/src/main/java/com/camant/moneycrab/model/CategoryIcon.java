@@ -2,6 +2,8 @@ package com.camant.moneycrab.model;
 
 import android.os.Parcel;
 
+import com.camant.moneycrab.util.MoneyDbHelper;
+
 /**
  * Created by sreng on 11/29/2016.
  */
@@ -27,7 +29,7 @@ public class CategoryIcon extends MoneyBase {
 
     @Override
     protected void initForDb() {
-
+        setTableName(MoneyDbHelper.TABLE_ICONS);
     }
 
     public CategoryIcon() {
@@ -63,4 +65,28 @@ public class CategoryIcon extends MoneyBase {
             return new CategoryIcon[size];
         }
     };
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getAlt() {
+        return alt;
+    }
+
+    public void setAlt(String alt) {
+        this.alt = alt;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
 }

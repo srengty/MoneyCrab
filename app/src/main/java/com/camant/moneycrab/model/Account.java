@@ -10,7 +10,7 @@ import com.camant.moneycrab.util.MoneyDbHelper;
 
 public class Account extends MoneyBase {
     private String name;
-    private int currencyId;
+    private long currencyId;
     private String alt;
     private String icon;
 
@@ -33,7 +33,7 @@ public class Account extends MoneyBase {
     @Override
     protected void storeInParcel(Parcel parcel, int i) {
         parcel.writeString(name);
-        parcel.writeInt(currencyId);
+        parcel.writeLong(currencyId);
         parcel.writeString(alt);
         parcel.writeString(icon);
     }
@@ -62,11 +62,11 @@ public class Account extends MoneyBase {
         this.name = name;
     }
 
-    public int getCurrencyId() {
+    public long getCurrencyId() {
         return currencyId;
     }
 
-    public void setCurrencyId(int currency) {
+    public void setCurrencyId(long currency) {
         this.currencyId = currency;
     }
 

@@ -26,4 +26,8 @@ public class CurrencyHelper extends MoneyBaseHelper {
         currencies.addAll(currencyDao.getAll());
         return currencies;
     }
+
+    public CurrencyDao getCurrencyDao() {
+        return currencyDao;
+    }
 }

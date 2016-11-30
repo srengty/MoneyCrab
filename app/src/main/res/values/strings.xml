@@ -35,4 +35,11 @@
     <string name="category_alt_hint">Shop</string>
     <string name="category_name_hint">Shop, Market, Mall</string>
     <string name="icon">Icon</string>
+    <string name="category_type_not_found">Category Type not found</string>
+    <string name="category_name_required">Category name is required</string>
+    <string name="currency_required">Currency is required</string>
+    <string name="category_icon_required">Please select an Icon</string>
+    <string name="account_name_required">Account name is required</string>
+    <string name="account_icon_required">Account icon is required</string>
+    <string name="category_name">Category name</string>
 </resources>

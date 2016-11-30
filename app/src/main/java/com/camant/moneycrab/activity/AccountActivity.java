@@ -1,13 +1,9 @@
 package com.camant.moneycrab.activity;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -15,21 +11,21 @@ import android.widget.Toast;
 
 import com.camant.moneycrab.R;
 import com.camant.moneycrab.adapter.CategoryIconsAdapter;
+import com.camant.moneycrab.dao.AccountOrmDao;
 import com.camant.moneycrab.dao.CategoryDao;
 import com.camant.moneycrab.dao.CategoryIconDao;
 import com.camant.moneycrab.helper.CurrencyHelper;
+import com.camant.moneycrab.model.Account;
 import com.camant.moneycrab.model.Category;
 import com.camant.moneycrab.model.CategoryIcon;
-import com.camant.moneycrab.model.CategoryType;
 import com.camant.moneycrab.model.Currency;
 import com.camant.moneycrab.orm.AccountOrm;
-import com.camant.moneycrab.orm.CategoryOrm;
 import com.camant.moneycrab.util.ViewUtil;
 import com.camant.moneycrab.view.Spinner;
 
 import java.util.ArrayList;
 
-public class CategoryActivity extends BaseCreateUpdateDeleteActivity {
+public class AccountActivity extends BaseCreateUpdateDeleteActivity {
     private CategoryIconsAdapter categoryIconsAdapter;
     private ArrayList<CategoryIcon> categoryIcons = new ArrayList<>();
     private ArrayList<Currency> currencies = new ArrayList<>();
@@ -37,33 +33,24 @@ public class CategoryActivity extends BaseCreateUpdateDeleteActivity {
     private CurrencyHelper currencyHelper;
     private EditText editTextName, editTextAlt;
     private TextView textViewIcon;
-    private CategoryType categoryType;
-    private Category category;
+    private Spinner spinner;
+    private Currency currency;
+    private AccountOrm accountOrm;
     private RecyclerView recyclerView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_category);
-
-        if(getIntent().hasExtra("category_type")){
-            categoryType = getIntent().getParcelableExtra("category_type");
+        setContentView(R.layout.activity_account);
+        if(getIntent().hasExtra("account")){
+            moneyBase = getIntent().getParcelableExtra("account");
         }
-        if(getIntent().hasExtra("category")){
-            moneyBase = getIntent().getParcelableExtra("category");
-        }
-
-        if(categoryType == null){
-            Toast.makeText(this, getString(R.string.category_type_not_found), Toast.LENGTH_LONG).show();
-            setResult(RESULT_CANCELED);
-            finish();
-            return;
-        }
-
         if(moneyBase == null){
-            moneyBase = new Category();
+            Account account = new Account();
+            moneyBase = new AccountOrm(account);
         }
 
-        this.category = (Category) moneyBase;
+        this.accountOrm = (AccountOrm) moneyBase;
+
         recyclerView = (RecyclerView)findViewById(R.id.recyclerViewIcons);
         /*LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
@@ -79,15 +66,26 @@ public class CategoryActivity extends BaseCreateUpdateDeleteActivity {
 
         currencyHelper = new CurrencyHelper(this);
         currencyHelper.loadCurrencies(currencies);
+        ArrayAdapter<Currency> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, currencies);
+        spinner = (Spinner)findViewById(R.id.spinnerCurrency);
+        if(spinner != null){
+            spinner.setAdapter(arrayAdapter);
+        }
         editTextName = (EditText)findViewById(R.id.editTextName);
         editTextAlt = (EditText)findViewById(R.id.editTextAlt);
         textViewIcon = (TextView) findViewById(R.id.textViewIcon);
 
         if(moneyBase.getId() > 0){
-            editTextName.setText(category.getName());
-            editTextAlt.setText(category.getAlt());
+            editTextName.setText(accountOrm.getName());
+            editTextAlt.setText(accountOrm.getAlt());
+            for(int i=0;i<currencies.size();i++){
+                if(currencies.get(i).getId() == accountOrm.getCurrencyId()){
+                    spinner.setSelectedItemPosition(i);
+                    break;
+                }
+            }
             for(int i=0;i<categoryIcons.size();i++){
-                if(categoryIcons.get(i).getPath().equals(category.getIcon())){
+                if(categoryIcons.get(i).getPath().equals(accountOrm.getIcon())){
                     categoryIconsAdapter.setSelectedPos(i);
                     break;
                 }
@@ -95,19 +93,17 @@ public class CategoryActivity extends BaseCreateUpdateDeleteActivity {
 
         }
     }
-
     @Override
     protected void onSave() {
         if(validate()) {
-            CategoryDao categoryDao = new CategoryDao(this);
-            Category category = new Category();
-            category.setName(editTextName.getText().toString());
-            category.setAlt(editTextAlt.getText().toString());
-            category.setCtype(categoryType.getId());
-            category.setIcon(categoryIcons.get(categoryIconsAdapter.getSelectedPos()).getPath());
-            categoryDao.create(category);
+            AccountOrmDao categoryDao = new AccountOrmDao(this);
+            accountOrm.setName(editTextName.getText().toString());
+            accountOrm.setAlt(editTextAlt.getText().toString());
+            accountOrm.setCurrencyId(((Currency)spinner.getSelectedItem()).getId());
+            accountOrm.setIcon(categoryIcons.get(categoryIconsAdapter.getSelectedPos()).getPath());
+            categoryDao.create(accountOrm);
             Intent data = new Intent();
-            data.putExtra("category", category);
+            data.putExtra("accountOrm", accountOrm);
             setResult(RESULT_OK, data);
             finish();
         }
@@ -116,14 +112,14 @@ public class CategoryActivity extends BaseCreateUpdateDeleteActivity {
     @Override
     protected void onUpdate() {
         if(validate()) {
-            CategoryDao categoryDao = new CategoryDao(this);
-            category.setName(editTextName.getText().toString());
-            category.setAlt(editTextAlt.getText().toString());
-            category.setCtype(categoryType.getId());
-            category.setIcon(categoryIcons.get(categoryIconsAdapter.getSelectedPos()).getPath());
-            categoryDao.update(category);
+            AccountOrmDao accountOrmDao = new AccountOrmDao(this);
+            accountOrm.setName(editTextName.getText().toString());
+            accountOrm.setAlt(editTextAlt.getText().toString());
+            accountOrm.setCurrencyId(currency.getId());
+            accountOrm.setIcon(categoryIcons.get(categoryIconsAdapter.getSelectedPos()).getPath());
+            accountOrmDao.update(accountOrm);
             Intent data = new Intent();
-            data.putExtra("category", category);
+            data.putExtra("accountOrm", accountOrm);
             setResult(RESULT_OK, data);
             finish();
         }
@@ -136,6 +132,13 @@ public class CategoryActivity extends BaseCreateUpdateDeleteActivity {
             valid = false;
         }else{
             editTextName.setError(null);
+        }
+        Currency currency = (Currency) spinner.getSelectedItem();
+        if(currency == null || currency.getId() == 0){
+            spinner.setError(getString(R.string.currency_required));
+            valid = false;
+        }else{
+            spinner.setError(null);
         }
 
         if(categoryIconsAdapter.getSelectedPos() < 0){
@@ -150,8 +153,8 @@ public class CategoryActivity extends BaseCreateUpdateDeleteActivity {
 
     @Override
     protected void onDelete() {
-        CategoryDao categoryDao = new CategoryDao(this);
-        categoryDao.delete(category);
+        AccountOrmDao accountOrmDao = new AccountOrmDao(this);
+        accountOrmDao.delete(accountOrm);
         setResult(RESULT_OK);
         finish();
     }

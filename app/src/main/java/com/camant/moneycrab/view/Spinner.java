@@ -30,6 +30,7 @@ public class Spinner extends Button implements View.OnClickListener, AdapterView
     private BaseAdapter adapter;
     private ListView listView;
     private AdapterView.OnItemClickListener onItemClickListener;
+    private Object selectedItem;
     public Spinner(Context context) {
         super(context);
         init(context, null, 0);
@@ -98,6 +99,7 @@ public class Spinner extends Button implements View.OnClickListener, AdapterView
         if(adapter != null) {
             this.setText("" + adapter.getItem(i));
         }
+        selectedItem = adapter.getItem(i);
         popupWindow.dismiss();
         if(onItemClickListener != null){
             onItemClickListener.onItemClick(adapterView, view, i, l);
@@ -106,6 +108,17 @@ public class Spinner extends Button implements View.OnClickListener, AdapterView
     private void initialSelection(){
         if(adapter != null && adapter.getCount()>0){
             setText("" + adapter.getItem(0));
+            selectedItem = adapter.getItem(0);
+        }
+    }
+
+    public Object getSelectedItem() {
+        return selectedItem;
+    }
+    public void setSelectedItemPosition(int position){
+        if(adapter != null && adapter.getCount()>position && position >= 0){
+            setText("" + adapter.getItem(position));
+            selectedItem = adapter.getItem(position);
         }
     }
 }

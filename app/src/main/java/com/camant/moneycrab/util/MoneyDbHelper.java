@@ -11,12 +11,13 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class MoneyDbHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "money.db";
-    private static final int VERSION = 3;
+    private static final int VERSION = 4;
     public static final String TABLE_CURRENCIES = "currencies";
     public static final String TABLE_ACCOUNTS = "accounts";
     public static final String TABLE_CATEGORIES = "categories";
     public static final String TABLE_CATEGORY_TYPES = "category_types";
     public static final String TABLE_TRANSACTIONS = "transactions";
+    public static final String TABLE_ICONS = "icons";
     private Context context;
 
     public MoneyDbHelper(Context context) {
@@ -33,29 +34,11 @@ public class MoneyDbHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
         //context.getAssets().list("");
-        if(oldVersion == 3 && newVersion == 4){
-            upgrade_3_4(sqLiteDatabase);
-        }else {
-            dropStructure(sqLiteDatabase);
-            buildStructure(sqLiteDatabase);
-            createDefaults(sqLiteDatabase);
-        }
-    }
 
-    private void upgrade_3_4(SQLiteDatabase sqLiteDatabase) {
-        sqLiteDatabase.execSQL("CREATE TABLE `icons`(" +
-                " `id` INTEGER PRIMARY KEY AUTOINCREMENT," +
-                " `name` TEXT," +
-                " `alt` TEXT," +
-                " `path` TEXT," +
-                " `created` INTEGER," +
-                " `modified` INTEGER)");
-        sqLiteDatabase.execSQL("INSERT INTO icons VALUES" +
-                " (1, 'Food', 'Food for home use', 'food.png','2016-11-29', '2016-11-29')" +
-                ", (2, 'Car', 'Own car or motor', 'car.png','2016-11-29', '2016-11-29')" +
-                ", (3, 'Sport', 'Sports', 'football.png','2016-11-29', '2016-11-29')" +
-                ", (4, 'Taxi', 'Taxi and motodup', 'taxi.png','2016-11-29', '2016-11-29')" +
-                ", (5, 'Party', 'Party', 'party.png','2016-11-29', '2016-11-29')" );
+        dropStructure(sqLiteDatabase);
+        buildStructure(sqLiteDatabase);
+        createDefaults(sqLiteDatabase);
+
     }
 
     @Override
@@ -118,6 +101,7 @@ public class MoneyDbHelper extends SQLiteOpenHelper {
         db.execSQL("drop table `currencies`;");
         db.execSQL("drop table `category_types`;");
         db.execSQL("drop table `transactions`;");
+        db.execSQL("drop table `icons`;");
     }
     private void createDefaults(SQLiteDatabase db){
         db.execSQL("INSERT INTO category_types values" +
